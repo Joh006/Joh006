@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html><!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Explosão de Amor</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+
+    class Particle {
+      constructor(type) {
+        this.type = type; // 'heart', 'star', 'text'
+        this.x = (Math.random() - 0.5) * canvas.width;
+        this.y = (Math.random() - 0.5) * canvas.height;
+        this.z = Math.random() * canvas.width;
+        this.speed = 5;
+        this.size = 20;
+        this.opacity = 1;
+      }
+
+      update() {
+        this.z -= this.speed;
+        if (this.z < 1) {
+          this.z = canvas.width;
+          this.x = (Math.random() - 0.5) * canvas.width;
+          this.y = (Math.random() - 0.5) * canvas.height;
+          this.opacity = 1;
+        }
+      }
+
+      draw() {
+        const scale = canvas.width / this.z;
+        const x2d = this.x * scale + canvas.width / 2;
+        const y2d = this.y * scale + canvas.height / 2;
+        const size = this.size * scale;
+
+        ctx.save();
+        ctx.translate(x2d, y2d);
+        ctx.globalAlpha = this.opacity;
+
+        if (this.type === 'heart') {
+          ctx.scale(size / 30, size / 30);
+          ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(0, -3, -5, -3, -5, 0);
+          ctx.bezierCurveTo(-5, 3, 0, 6, 0, 9);
+          ctx.bezierCurveTo(0, 6, 5, 3, 5, 0);
+          ctx.bezierCurveTo(5, -3, 0, -3, 0, 0);
+          ctx.fill();
+        }
+
+        else if (this.type === 'star') {
+          ctx.fillStyle = 'white';
+          ctx.beginPath();
+          ctx.arc(0, 0, size / 10, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        else if (this.type === 'text') {
+          ctx.font = `${size}px Arial`;
+          ctx.fillStyle = 'orange';
+          ctx.shadowColor = 'rgba(255, 140, 0, 0.9)';
+          ctx.shadowBlur = 20;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          ctx.fillText("Eu te amo 💖", -size / 2, size / 2);
+        }
+
+        ctx.restore();
+      }
+    }
+
+    // Criar partículas
+    for (let i = 0; i < 150; i++) particles.push(new Particle('heart'));
+    for (let i = 0; i < 100; i++) particles.push(new Particle('star'));
+    for (let i = 0; i < 20; i++) particles.push(new Particle('text'));
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
